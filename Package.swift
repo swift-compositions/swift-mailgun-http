@@ -31,7 +31,7 @@ let package = Package(
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-foundations/swift-html-form-coder.git",
+            url: "https://github.com/swift-compositions/swift-html-form-coder.git",
             branch: "main"
         ),
         .package(
@@ -39,7 +39,7 @@ let package = Package(
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-foundations/swift-http-body.git",
+            url: "https://github.com/swift-compositions/swift-http-body.git",
             branch: "main"
         ),
         .package(
@@ -49,15 +49,15 @@ let package = Package(
         .package(url: "https://github.com/swift-ietf/swift-rfc-3986.git", branch: "main"),
         .package(url: "https://github.com/swift-ietf/swift-rfc-2046.git", branch: "main"),
         .package(
-            url: "https://github.com/swift-primitives/swift-time-primitives.git",
+            url: "https://github.com/swift-molecules/swift-time.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-byte-primitives.git",
+            url: "https://github.com/swift-molecules/swift-byte.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-foundations/swift-mailgun.git",
+            url: "https://github.com/swift-compositions/swift-mailgun.git",
             branch: "main"
         ),
     ],
@@ -75,8 +75,8 @@ let package = Package(
                 .product(name: "HTTP Standard", package: "swift-http-standard"),
                 .product(name: "RFC 3986", package: "swift-rfc-3986"),
                 .product(name: "RFC 2046", package: "swift-rfc-2046"),
-                .product(name: "Time Primitive", package: "swift-time-primitives"),
-                .product(name: "Byte Primitive", package: "swift-byte-primitives"),
+                .product(name: "Time Primitive", package: "swift-time"),
+                .product(name: "Byte Primitive", package: "swift-byte"),
                 .product(name: "Mailgun", package: "swift-mailgun"),
             ]
         ),

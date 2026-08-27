@@ -1,6 +1,6 @@
 # swift-mailgun-http
 
-[![CI](https://github.com/swift-foundations/swift-mailgun-http/actions/workflows/ci.yml/badge.svg)](https://github.com/swift-foundations/swift-mailgun-http/actions/workflows/ci.yml)
+[![CI](https://github.com/swift-compositions/swift-mailgun-http/actions/workflows/ci.yml/badge.svg)](https://github.com/swift-compositions/swift-mailgun-http/actions/workflows/ci.yml)
 ![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
 
 HTTP wire construction, authentication, and JSON decoding for the typed Mailgun operations published by `swift-mailgun`.
@@ -21,7 +21,7 @@ Add the package dependency:
 ```swift
 dependencies: [
     .package(
-        url: "https://github.com/swift-foundations/swift-mailgun-http.git",
+        url: "https://github.com/swift-compositions/swift-mailgun-http.git",
         branch: "main"
     )
 ]
@@ -86,11 +86,11 @@ let request = try Mailgun.HTTP.Routes.list(limit: 25, skip: 0)
 
 ## Architecture
 
-Three layers, each owning a different concern:
+Three components, each owning a different concern:
 
-- **`Mailgun Standard`** (L2, `swift-mailgun-standard`) owns the wire-shaped vocabulary — every `Request`/`Response` DTO, `Codable` and wire-accurate.
-- **`Mailgun`** (`swift-mailgun`) owns the typed, closure-bag `Client<Failure>` per resource — the shape every wrapper in this package targets.
-- **`Mailgun HTTP`** (this package) owns everything between the two: request construction, authentication, transport execution, and response decoding.
+- **`Mailgun Standard`** (L3, `swift-mailgun-standard`) owns the wire-shaped vocabulary — every `Request`/`Response` DTO, `Codable` and wire-accurate.
+- **`Mailgun`** (L4, `swift-mailgun`) owns the typed, closure-bag `Client<Failure>` per resource — the shape every wrapper in this package targets.
+- **`Mailgun HTTP`** (L4, this package) owns everything between the two: request construction, authentication, transport execution, and response decoding.
 
 Within this package, two sub-layers keep wire-fact correctness independent of the outer wrapper:
 
@@ -108,7 +108,7 @@ Four operations are not implemented. Each is a real gap, not an oversight — ca
 - **`Lists.bulkAddCSV`** — the archived router encoded the CSV payload as a raw `Data`-typed *path* component (not a body), which both fails RFC 3986 path-segment legality for any payload containing the row-separating newline the operation exists to carry, and isn't fully captured by its own corpus fixture (the fixture's line-oriented format truncates at the first embedded newline).
 - **`Suppressions.Bounces.importList`**, **`Suppressions.Unsubscribe.importList`**, **`Suppressions.Allowlist.importList`** — these draw a random multipart boundary through a `.csv` file-upload encoder preset that belonged to the deleted `-Live` architecture and no longer exists in the current `swift-html-form-coder`. (`Suppressions.Complaints.importList`, by contrast, uses a fixed boundary and a plain base64 text field — fully implemented and corpus-verified.)
 
-See [swift-mailgun-http#7](https://github.com/swift-foundations/swift-mailgun-http/issues/7) for the record.
+See [swift-mailgun-http#7](https://github.com/swift-compositions/swift-mailgun-http/issues/7) for the record.
 
 ## Testing
 
