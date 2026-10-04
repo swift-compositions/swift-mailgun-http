@@ -1,7 +1,7 @@
 import Domain_Standard
 import EmailAddress_Standard
 import HTTP_Standard
-import Time_Primitive
+import Time
 
 /// Wire-level request construction for `Mailgun.Reporting.Events` (docs
 /// section "Events").
@@ -23,10 +23,10 @@ extension Mailgun.HTTP.Reporting.Events {
     ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
         var parameters: [(String, String)] = []
         if let begin = query?.begin {
-            parameters.append(("begin", String(begin.referenceDate.secondsSinceEpoch)))
+            parameters.append(("begin", String(begin.secondsSinceUnixEpoch)))
         }
         if let end = query?.end {
-            parameters.append(("end", String(end.referenceDate.secondsSinceEpoch)))
+            parameters.append(("end", String(end.secondsSinceUnixEpoch)))
         }
         if let ascending = query?.ascending { parameters.append(("ascending", ascending.rawValue)) }
         if let limit = query?.limit { parameters.append(("limit", String(limit))) }

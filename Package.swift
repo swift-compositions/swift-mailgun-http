@@ -1,4 +1,4 @@
-// swift-tools-version: 6.3.3
+// swift-tools-version: 6.4
 
 import PackageDescription
 
@@ -46,14 +46,19 @@ let package = Package(
             url: "https://github.com/swift-standards/swift-http-standard.git",
             branch: "main"
         ),
-        .package(url: "https://github.com/swift-ietf/swift-rfc-3986.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-2045.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-2045-coder.git", branch: "main"),
         .package(url: "https://github.com/swift-ietf/swift-rfc-2046.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-2046-coder.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-2183.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-3986.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-3986-coder.git", branch: "main"),
         .package(
-            url: "https://github.com/swift-molecules/swift-time.git",
+            url: "https://github.com/swift-atoms/swift-time.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-molecules/swift-byte.git",
+            url: "https://github.com/swift-atoms/swift-byte.git",
             branch: "main"
         ),
         .package(
@@ -73,16 +78,26 @@ let package = Package(
                 .product(name: "HTML Standard", package: "swift-html-standard"),
                 .product(name: "HTTP Body", package: "swift-http-body"),
                 .product(name: "HTTP Standard", package: "swift-http-standard"),
-                .product(name: "RFC 3986", package: "swift-rfc-3986"),
+                .product(name: "RFC 2045", package: "swift-rfc-2045"),
+                .product(name: "RFC 2045 Coder", package: "swift-rfc-2045-coder"),
                 .product(name: "RFC 2046", package: "swift-rfc-2046"),
-                .product(name: "Time Primitive", package: "swift-time"),
-                .product(name: "Byte Primitive", package: "swift-byte"),
+                .product(name: "RFC 2046 Coder", package: "swift-rfc-2046-coder"),
+                .product(name: "RFC 2183", package: "swift-rfc-2183"),
+                .product(name: "RFC 3986", package: "swift-rfc-3986"),
+                .product(name: "RFC 3986 Coder", package: "swift-rfc-3986-coder"),
+                .product(name: "Time", package: "swift-time"),
+                .product(name: "Byte", package: "swift-byte"),
                 .product(name: "Mailgun", package: "swift-mailgun"),
             ]
         ),
         .testTarget(
             name: "Mailgun HTTP Tests",
-            dependencies: ["Mailgun HTTP"]
+            dependencies: [
+                "Mailgun HTTP",
+                .product(name: "Domain Standard", package: "swift-domain-standard"),
+                .product(name: "EmailAddress Standard", package: "swift-emailaddress-standard"),
+                .product(name: "Time", package: "swift-time"),
+            ]
         ),
     ],
     swiftLanguageModes: [.v6]

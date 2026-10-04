@@ -7,7 +7,7 @@ import HTTP_Standard
 /// (`swift-mailgun-standard` commit `15f7f18`) and verified against
 /// `Tests/Mailgun HTTP Tests/__Corpus__/Reporting.Metrics.txt`. Unlike
 /// `Reporting.Logs.analytics`, both request DTOs here carry only plain
-/// `String`/`Bool`/`[String]` fields (no `Time.Epoch`), so each is passed
+/// `String`/`Bool`/`[String]` fields (no `Instant`), so each is passed
 /// straight through `Mailgun.HTTP.Construction.json(_:into:)` — the DTO's
 /// own `Codable` conformance is already wire-accurate.
 extension Mailgun.HTTP.Reporting {

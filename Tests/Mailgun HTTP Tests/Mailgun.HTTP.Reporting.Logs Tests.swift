@@ -1,5 +1,5 @@
 import Testing
-import Time_Primitive
+import Time
 
 @testable import Mailgun_HTTP
 
@@ -15,8 +15,8 @@ extension Mailgun.HTTP.Reporting.Logs.Construction.Unit {
             .init(
                 action: "delivered",
                 groupBy: "domain",
-                startDate: .init(referenceDate: Time(secondsSinceEpoch: 721_692_800)),
-                endDate: .init(referenceDate: Time(secondsSinceEpoch: 721_779_200)),
+                startDate: Instant(secondsSinceUnixEpoch: 721_692_800),
+                endDate: Instant(secondsSinceUnixEpoch: 721_779_200),
                 filter: .init(
                     and: [
                         .init(

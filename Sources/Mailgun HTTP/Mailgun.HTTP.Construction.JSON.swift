@@ -2,9 +2,9 @@ extension Mailgun.HTTP.Construction {
     /// A minimal, outbound-only JSON tree for the handful of operations whose
     /// wire body is `application/json` rather than
     /// `application/x-www-form-urlencoded` or `multipart/form-data`
-    /// (`Mailgun.Reporting.Logs.analytics`, whose `Time.Epoch` fields need to
+    /// (`Mailgun.Reporting.Logs.analytics`, whose `Instant` fields need to
     /// render as bare Unix-epoch-seconds integers rather than the nested
-    /// object `Time.Epoch`'s own `Codable` conformance produces).
+    /// object `Instant`'s own `Codable` conformance produces).
     ///
     /// Not `RFC_8259.Value`: `swift-json`'s `JSON` target depends on
     /// `swift-async`, which (as of this writing) pulls in `swift-kernel`

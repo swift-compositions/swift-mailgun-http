@@ -1,7 +1,7 @@
 import Domain_Standard
 import EmailAddress_Standard
 import Testing
-import Time_Primitive
+import Time
 
 @testable import Mailgun_HTTP
 
@@ -16,8 +16,8 @@ extension Mailgun.HTTP.Reporting.Events.Construction.Unit {
         let request = try Mailgun.HTTP.Reporting.Events.list(
             try Domain("parity.example.com"),
             .init(
-                begin: .init(referenceDate: Time(secondsSinceEpoch: 1_700_000_000)),
-                end: .init(referenceDate: Time(secondsSinceEpoch: 1_700_086_400)),
+                begin: Instant(secondsSinceUnixEpoch: 1_700_000_000),
+                end: Instant(secondsSinceUnixEpoch: 1_700_086_400),
                 ascending: .yes,
                 limit: 100,
                 event: .delivered,

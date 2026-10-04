@@ -1,5 +1,6 @@
 import HTTP_Standard
 import RFC_3986
+import RFC_3986_Coder
 
 extension Mailgun.HTTP.Client {
     /// Resolves a wire-constructed request (origin-form, unauthenticated —

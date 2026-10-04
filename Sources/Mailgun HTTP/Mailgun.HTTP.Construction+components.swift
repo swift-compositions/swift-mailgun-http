@@ -1,4 +1,4 @@
-import Byte_Primitive
+import Byte
 import Domain_Standard
 import Foundation
 import HTML_Form_Coder_Codable
@@ -148,7 +148,7 @@ extension Mailgun.HTTP.Construction {
         } catch {
             throw .json(String(describing: error))
         }
-        request.body = data.map(Byte.init)
+        request.body = data.map(Byte.init(bitPattern:))
         request.headers.removeAll(named: "Content-Type")
         request.headers.append(
             try Mailgun.HTTP.Construction.header("Content-Type", "application/json")

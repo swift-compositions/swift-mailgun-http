@@ -1,11 +1,14 @@
+import Byte
 import Domain_Standard
 import EmailAddress_Standard
 import Foundation
 import HTTP_Standard
 import RFC_2045
+import RFC_2045_Coder
 import RFC_2046
+import RFC_2046_Coder
 import RFC_2183
-import Time_Primitive
+import Time
 
 /// Wire-level request construction for `Mailgun.Messages` (official
 /// reference: `.../send/mailgun/messages`).
@@ -126,7 +129,7 @@ extension Mailgun.HTTP.Messages {
                 contentDisposition: .formData(name: name, filename: filename),
                 contentType: contentType
             ),
-            content: RFC_2046.BodyPart.Content(binary: data.map(Byte.init))
+            content: RFC_2046.BodyPart.Content(binary: data.map(Byte.init(bitPattern:)))
         )
     }
 
@@ -157,7 +160,7 @@ extension Mailgun.HTTP.Messages {
         var dkim: Bool?
         var secondaryDkim: String?
         var secondaryDkimPublic: String?
-        var deliveryTime: Time.Epoch?
+        var deliveryTime: Instant?
         var deliveryTimeOptimizePeriod: String?
         var timeZoneLocalize: String?
         var testMode: Bool?
@@ -239,15 +242,15 @@ extension Mailgun.HTTP.Messages {
     /// RFC 2822 date-time (`EEE, dd MMM yyyy HH:mm:ss zzz`), matching the
     /// archived router's `DateFormatter` — fixed to UTC explicitly rather
     /// than the archived formatter's implicit system-timezone dependency
-    /// (`Time.Epoch` is a UTC instant; no corpus fixture exercises this
+    /// (`Instant` is a UTC instant; no corpus fixture exercises this
     /// field, so there is nothing to diverge from).
-    fileprivate static func rfc2822(_ epoch: Time.Epoch) -> String {
+    fileprivate static func rfc2822(_ instant: Instant) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone(identifier: "UTC")
         return formatter.string(
-            from: Date(timeIntervalSince1970: Double(epoch.referenceDate.secondsSinceEpoch))
+            from: Date(timeIntervalSince1970: Double(instant.secondsSinceUnixEpoch))
         )
     }
 

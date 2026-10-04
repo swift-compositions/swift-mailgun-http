@@ -1,5 +1,5 @@
 import HTTP_Standard
-import Time_Primitive
+import Time
 
 /// Wire-level request construction for `Mailgun.Reporting.Logs` (docs
 /// section "Log Analytics").
@@ -8,8 +8,8 @@ import Time_Primitive
 /// (`swift-mailgun-standard` commit `15f7f18`) and verified against
 /// `Tests/Mailgun HTTP Tests/__Corpus__/Reporting.Logs.txt`. The only
 /// `application/json` operation in this package whose request DTO carries a
-/// `Time.Epoch` field — `startDate`/`endDate` render as bare Unix-epoch-seconds
-/// integers on the wire, not the nested object `Time.Epoch`'s own `Codable`
+/// `Instant` field — `startDate`/`endDate` render as bare Unix-epoch-seconds
+/// integers on the wire, not the nested object `Instant`'s own `Codable`
 /// conformance produces, so the body is built as a
 /// `Mailgun.HTTP.Construction.JSON` tree rather than passing the DTO straight
 /// through `Foundation.JSONEncoder`.
@@ -35,10 +35,10 @@ extension Mailgun.HTTP.Reporting.Logs {
         if let action = request.action { pairs.append(("action", .string(action))) }
         if let groupBy = request.groupBy { pairs.append(("group_by", .string(groupBy))) }
         if let startDate = request.startDate {
-            pairs.append(("start_date", .int(startDate.referenceDate.secondsSinceEpoch)))
+            pairs.append(("start_date", .int(Int(startDate.secondsSinceUnixEpoch))))
         }
         if let endDate = request.endDate {
-            pairs.append(("end_date", .int(endDate.referenceDate.secondsSinceEpoch)))
+            pairs.append(("end_date", .int(Int(endDate.secondsSinceUnixEpoch))))
         }
         if let filter = request.filter { pairs.append(("filter", Self.json(filter))) }
         if let include = request.include {
