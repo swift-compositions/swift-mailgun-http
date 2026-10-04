@@ -1,5 +1,7 @@
 import Domain_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Domains.Domains.Tracking`
 /// (docs section "Tracking").
@@ -14,17 +16,17 @@ extension Mailgun.HTTP.Domains {
 extension Mailgun.HTTP.Domains.Tracking {
     public static func get(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
-        try Mailgun.HTTP.Construction.request(.get, ["v3", "domains", domain.rawValue, "tracking"])
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
+        try Mailgun.HTTP.Construction.request(.get, ["v3", "domains", domain.name, "tracking"])
     }
 
     public static func updateClick(
         _ domain: Domain,
         _ request: Mailgun.Domains.Domains.Tracking.UpdateClick.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
-            ["v3", "domains", domain.rawValue, "tracking", "click"]
+            ["v3", "domains", domain.name, "tracking", "click"]
         )
         try Mailgun.HTTP.Construction.form(
             request,
@@ -37,10 +39,10 @@ extension Mailgun.HTTP.Domains.Tracking {
     public static func updateOpen(
         _ domain: Domain,
         _ request: Mailgun.Domains.Domains.Tracking.UpdateOpen.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
-            ["v3", "domains", domain.rawValue, "tracking", "open"]
+            ["v3", "domains", domain.name, "tracking", "open"]
         )
         try Mailgun.HTTP.Construction.form(
             request,
@@ -53,10 +55,10 @@ extension Mailgun.HTTP.Domains.Tracking {
     public static func updateUnsubscribe(
         _ domain: Domain,
         _ request: Mailgun.Domains.Domains.Tracking.UpdateUnsubscribe.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
-            ["v3", "domains", domain.rawValue, "tracking", "unsubscribe"]
+            ["v3", "domains", domain.name, "tracking", "unsubscribe"]
         )
         try Mailgun.HTTP.Construction.form(
             request,

@@ -1,6 +1,8 @@
 import Domain_Standard
 import EmailAddress_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Suppressions.Allowlist`
 /// (docs section "Allowlists" — the wire path is still `whitelists`, the
@@ -32,35 +34,35 @@ extension Mailgun.HTTP.Suppressions.Allowlist {
     public static func get(
         _ domain: Domain,
         value: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "whitelists", value]
+            ["v3", domain.name, "whitelists", value]
         )
     }
 
     public static func delete(
         _ domain: Domain,
         value: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
-            ["v3", domain.rawValue, "whitelists", value]
+            ["v3", domain.name, "whitelists", value]
         )
     }
 
     public static func list(
         _ domain: Domain,
         _ request: Mailgun.Suppressions.Allowlist.List.Request? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
-        if let address = request?.address { query.append(("address", address.rawValue)) }
+        if let address = request?.address { query.append(("address", address.address)) }
         if let term = request?.term { query.append(("term", term)) }
         if let limit = request?.limit { query.append(("limit", String(limit))) }
         if let page = request?.page { query.append(("page", page)) }
         return try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "whitelists"],
+            ["v3", domain.name, "whitelists"],
             query: query
         )
     }
@@ -68,10 +70,10 @@ extension Mailgun.HTTP.Suppressions.Allowlist {
     public static func create(
         _ domain: Domain,
         _ request: Mailgun.Suppressions.Allowlist.Create.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
-            ["v3", domain.rawValue, "whitelists"]
+            ["v3", domain.name, "whitelists"]
         )
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest
@@ -79,7 +81,7 @@ extension Mailgun.HTTP.Suppressions.Allowlist {
 
     public static func deleteAll(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
-        try Mailgun.HTTP.Construction.request(.delete, ["v3", domain.rawValue, "whitelists"])
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
+        try Mailgun.HTTP.Construction.request(.delete, ["v3", domain.name, "whitelists"])
     }
 }

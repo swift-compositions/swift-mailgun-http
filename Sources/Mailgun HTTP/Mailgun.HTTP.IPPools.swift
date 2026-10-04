@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.IPPools` (docs section "IP
 /// Pools").
@@ -14,13 +16,13 @@ extension Mailgun.HTTP {
 }
 
 extension Mailgun.HTTP.IPPools {
-    public static func list() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    public static func list() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v1", "ip_pools"])
     }
 
     public static func create(
         _ request: Mailgun.IPPools.Create.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(.post, ["v1", "ip_pools"])
         try Mailgun.HTTP.Construction.form(request, encoder: .mailgunBracketed, into: &httpRequest)
         return httpRequest
@@ -28,14 +30,14 @@ extension Mailgun.HTTP.IPPools {
 
     public static func get(
         _ poolId: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v1", "ip_pools", poolId])
     }
 
     public static func update(
         _ poolId: String,
         _ request: Mailgun.IPPools.Update.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(.patch, ["v1", "ip_pools", poolId])
         try Mailgun.HTTP.Construction.form(request, encoder: .mailgunBracketed, into: &httpRequest)
         return httpRequest
@@ -44,7 +46,7 @@ extension Mailgun.HTTP.IPPools {
     public static func delete(
         _ poolId: String,
         _ request: Mailgun.IPPools.Delete.Request? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let ip = request?.ip { query.append(("ip", ip)) }
         if let replacementPoolId = request?.poolId { query.append(("pool_id", replacementPoolId)) }
@@ -57,7 +59,7 @@ extension Mailgun.HTTP.IPPools {
 
     public static func listDomains(
         _ poolId: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v1", "ip_pools", poolId, "domains"])
     }
 }

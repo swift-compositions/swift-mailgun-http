@@ -1,6 +1,8 @@
 import Domain_Standard
 import EmailAddress_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Suppressions.Unsubscribe`
 /// (docs section "Unsubscribes").
@@ -28,35 +30,35 @@ extension Mailgun.HTTP.Suppressions.Unsubscribe {
     public static func get(
         _ domain: Domain,
         address: EmailAddress
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "unsubscribes", address.rawValue]
+            ["v3", domain.name, "unsubscribes", address.address]
         )
     }
 
     public static func delete(
         _ domain: Domain,
         address: EmailAddress
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
-            ["v3", domain.rawValue, "unsubscribes", address.rawValue]
+            ["v3", domain.name, "unsubscribes", address.address]
         )
     }
 
     public static func list(
         _ domain: Domain,
         _ request: Mailgun.Suppressions.Unsubscribe.List.Request? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
-        if let address = request?.address { query.append(("address", address.rawValue)) }
+        if let address = request?.address { query.append(("address", address.address)) }
         if let term = request?.term { query.append(("term", term)) }
         if let limit = request?.limit { query.append(("limit", String(limit))) }
         if let page = request?.page { query.append(("page", page)) }
         return try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "unsubscribes"],
+            ["v3", domain.name, "unsubscribes"],
             query: query
         )
     }
@@ -64,10 +66,10 @@ extension Mailgun.HTTP.Suppressions.Unsubscribe {
     public static func create(
         _ domain: Domain,
         _ request: Mailgun.Suppressions.Unsubscribe.Create.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
-            ["v3", domain.rawValue, "unsubscribes"]
+            ["v3", domain.name, "unsubscribes"]
         )
         try Mailgun.HTTP.Construction.form(request, encoder: .mailgunBracketed, into: &httpRequest)
         return httpRequest
@@ -75,7 +77,7 @@ extension Mailgun.HTTP.Suppressions.Unsubscribe {
 
     public static func deleteAll(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
-        try Mailgun.HTTP.Construction.request(.delete, ["v3", domain.rawValue, "unsubscribes"])
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
+        try Mailgun.HTTP.Construction.request(.delete, ["v3", domain.name, "unsubscribes"])
     }
 }

@@ -1,5 +1,6 @@
 import Domain_Standard
 import EmailAddress_Standard
+import RFC_6531
 import Testing
 
 @testable import Mailgun_HTTP
@@ -31,7 +32,7 @@ extension Mailgun.HTTP.Suppressions.Allowlist.Construction.Unit {
         let request = try Mailgun.HTTP.Suppressions.Allowlist.list(
             try Domain("parity.example.com"),
             .init(
-                address: try EmailAddress("user@parity.example.com"),
+                address: EmailAddress(rfc6531: try RFC_6531.Mailbox("user@parity.example.com")),
                 term: "parity-term",
                 limit: 25,
                 page: "next-page-token"
@@ -48,7 +49,7 @@ extension Mailgun.HTTP.Suppressions.Allowlist.Construction.Unit {
     @Test func `create with an address builds the corpus create-address request`() throws {
         let request = try Mailgun.HTTP.Suppressions.Allowlist.create(
             try Domain("parity.example.com"),
-            .address(try EmailAddress("user@parity.example.com"))
+            .address(EmailAddress(rfc6531: try RFC_6531.Mailbox("user@parity.example.com")))
         )
         Corpus.load("Suppressions.Allowlist", case: "create-address").expect(matches: request)
     }

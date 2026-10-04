@@ -1,5 +1,7 @@
 import Domain_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Domains.DKIM_Security` (docs
 /// section "DKIM Key Rotation").
@@ -15,10 +17,10 @@ extension Mailgun.HTTP.Domains.DKIMSecurity {
     public static func updateRotation(
         _ domain: Domain,
         _ request: Mailgun.Domains.DKIM_Security.Rotation.Update.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
-            ["v1", "dkim_management", "domains", domain.rawValue, "rotation"]
+            ["v1", "dkim_management", "domains", domain.name, "rotation"]
         )
         try Mailgun.HTTP.Construction.form(
             request,
@@ -30,10 +32,10 @@ extension Mailgun.HTTP.Domains.DKIMSecurity {
 
     public static func rotateManually(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .post,
-            ["v1", "dkim_management", "domains", domain.rawValue, "rotate"]
+            ["v1", "dkim_management", "domains", domain.name, "rotate"]
         )
     }
 }

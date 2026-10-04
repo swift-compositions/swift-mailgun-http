@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.CustomMessageLimit` (docs
 /// section "Custom Message Limit").
@@ -11,7 +13,7 @@ extension Mailgun.HTTP {
 }
 
 extension Mailgun.HTTP.CustomMessageLimit {
-    public static func getMonthlyLimit() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    public static func getMonthlyLimit() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
             ["v5", "accounts", "limit", "custom", "monthly"]
@@ -20,7 +22,7 @@ extension Mailgun.HTTP.CustomMessageLimit {
 
     public static func setMonthlyLimit(
         _ request: Mailgun.CustomMessageLimit.Monthly.Set.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .put,
             ["v5", "accounts", "limit", "custom", "monthly"],
@@ -28,7 +30,7 @@ extension Mailgun.HTTP.CustomMessageLimit {
         )
     }
 
-    public static func deleteMonthlyLimit() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request
+    public static func deleteMonthlyLimit() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request
     {
         try Mailgun.HTTP.Construction.request(
             .delete,
@@ -36,7 +38,7 @@ extension Mailgun.HTTP.CustomMessageLimit {
         )
     }
 
-    public static func enableAccount() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    public static func enableAccount() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .put,
             ["v5", "accounts", "limit", "custom", "enable"]

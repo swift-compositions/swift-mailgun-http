@@ -2,7 +2,9 @@ import Domain_Standard
 import HTML_Form_Coder
 import HTML_Form_Coder_Codable
 import HTML_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 import RFC_2046
 import RFC_3986
 
@@ -32,7 +34,7 @@ extension Mailgun.HTTP.Construction {
         case boundary(RFC_2046.Boundary.Error)
 
         /// A header field's value was not RFC 9110 field-value legal.
-        case header(HTTP.Header.Field.Error)
+        case header(RFC_9110.Field.Error)
 
         /// A raw `String` domain name was not a legal `Domain` — only
         /// `Mailgun.HTTP.Client`'s wrapper for `Mailgun.HTTP.IPs.deleteDomainIP`/

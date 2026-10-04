@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Keys` (docs section "Keys").
 ///
@@ -10,13 +12,13 @@ extension Mailgun.HTTP {
 }
 
 extension Mailgun.HTTP.Keys {
-    public static func list() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    public static func list() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v1", "keys"])
     }
 
     public static func create(
         _ request: Mailgun.Keys.Create.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(.post, ["v1", "keys"])
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest
@@ -24,13 +26,13 @@ extension Mailgun.HTTP.Keys {
 
     public static func delete(
         _ keyId: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.delete, ["v1", "keys", keyId])
     }
 
     public static func addPublicKey(
         _ request: Mailgun.Keys.PublicKey.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(.post, ["v1", "keys", "public"])
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest

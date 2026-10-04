@@ -1,5 +1,7 @@
 import Domain_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.IPs` (docs section "IPs").
 ///
@@ -13,26 +15,26 @@ extension Mailgun.HTTP {
 }
 
 extension Mailgun.HTTP.IPs {
-    public static func list() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    public static func list() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v3", "ips"])
     }
 
     public static func get(
         _ ip: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v3", "ips", ip])
     }
 
     public static func listDomains(
         _ ip: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v3", "ips", ip, "domains"])
     }
 
     public static func assignDomain(
         _ ip: String,
         _ request: Mailgun.IPs.AssignDomain.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
             ["v3", "ips", ip, "domains"]
@@ -44,14 +46,14 @@ extension Mailgun.HTTP.IPs {
     public static func unassignDomain(
         _ ip: String,
         domain: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.delete, ["v3", "ips", ip, "domains", domain])
     }
 
     public static func assignIPBand(
         _ ip: String,
         _ request: Mailgun.IPs.IPBand.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
             ["v3", "ips", ip, "ip_band"]
@@ -62,7 +64,7 @@ extension Mailgun.HTTP.IPs {
 
     public static func requestNew(
         _ request: Mailgun.IPs.RequestNew.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
             ["v3", "ips", "request", "new"]
@@ -71,27 +73,27 @@ extension Mailgun.HTTP.IPs {
         return httpRequest
     }
 
-    public static func getRequestedIPs() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    public static func getRequestedIPs() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v3", "ips", "request", "new"])
     }
 
     public static func deleteDomainIP(
         domain: Domain,
         ip: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
-            ["v3", "domains", domain.rawValue, "ips", ip]
+            ["v3", "domains", domain.name, "ips", ip]
         )
     }
 
     public static func deleteDomainPool(
         domain: Domain,
         ip: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
-            ["v3", "domains", domain.rawValue, "pool", ip]
+            ["v3", "domains", domain.name, "pool", ip]
         )
     }
 }

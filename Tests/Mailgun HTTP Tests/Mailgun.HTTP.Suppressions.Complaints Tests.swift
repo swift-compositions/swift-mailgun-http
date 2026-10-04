@@ -1,5 +1,7 @@
+import Byte
 import Domain_Standard
 import EmailAddress_Standard
+import RFC_6531
 import Testing
 
 @testable import Mailgun_HTTP
@@ -14,7 +16,7 @@ extension Mailgun.HTTP.Suppressions.Complaints.Construction.Unit {
     @Test func `importList builds the corpus importList request`() throws {
         let request = try Mailgun.HTTP.Suppressions.Complaints.importList(
             try Domain("parity.example.com"),
-            .init(file: Array("address\ncomplained@parity.example.com\n".utf8))
+            .init(file: Array("address\ncomplained@parity.example.com\n".utf8).map(Byte.init(bitPattern:)))
         )
         Corpus.load("Suppressions.Complaints", case: "importList").expect(matches: request)
     }
@@ -22,7 +24,7 @@ extension Mailgun.HTTP.Suppressions.Complaints.Construction.Unit {
     @Test func `get builds the corpus get request`() throws {
         let request = try Mailgun.HTTP.Suppressions.Complaints.get(
             try Domain("parity.example.com"),
-            address: try EmailAddress("user@parity.example.com")
+            address: EmailAddress(rfc6531: try RFC_6531.Mailbox("user@parity.example.com"))
         )
         Corpus.load("Suppressions.Complaints", case: "get").expect(matches: request)
     }
@@ -30,7 +32,7 @@ extension Mailgun.HTTP.Suppressions.Complaints.Construction.Unit {
     @Test func `delete builds the corpus delete request`() throws {
         let request = try Mailgun.HTTP.Suppressions.Complaints.delete(
             try Domain("parity.example.com"),
-            address: try EmailAddress("user@parity.example.com")
+            address: EmailAddress(rfc6531: try RFC_6531.Mailbox("user@parity.example.com"))
         )
         Corpus.load("Suppressions.Complaints", case: "delete").expect(matches: request)
     }
@@ -39,7 +41,7 @@ extension Mailgun.HTTP.Suppressions.Complaints.Construction.Unit {
         let request = try Mailgun.HTTP.Suppressions.Complaints.list(
             try Domain("parity.example.com"),
             .init(
-                address: try EmailAddress("user@parity.example.com"),
+                address: EmailAddress(rfc6531: try RFC_6531.Mailbox("user@parity.example.com")),
                 term: "parity-term",
                 limit: 25,
                 page: "next-page-token"
@@ -59,7 +61,7 @@ extension Mailgun.HTTP.Suppressions.Complaints.Construction.Unit {
         let request = try Mailgun.HTTP.Suppressions.Complaints.create(
             try Domain("parity.example.com"),
             .init(
-                address: try EmailAddress("user@parity.example.com"),
+                address: EmailAddress(rfc6531: try RFC_6531.Mailbox("user@parity.example.com")),
                 createdAt: "Thu, 01 Jan 2026 00:00:00 UTC"
             )
         )

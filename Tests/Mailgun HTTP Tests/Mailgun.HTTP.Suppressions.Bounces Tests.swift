@@ -1,5 +1,6 @@
 import Domain_Standard
 import EmailAddress_Standard
+import RFC_6531
 import Testing
 
 @testable import Mailgun_HTTP
@@ -14,7 +15,7 @@ extension Mailgun.HTTP.Suppressions.Bounces.Construction.Unit {
     @Test func `get builds the corpus get request`() throws {
         let request = try Mailgun.HTTP.Suppressions.Bounces.get(
             try Domain("parity.example.com"),
-            address: try EmailAddress("user@parity.example.com")
+            address: EmailAddress(rfc6531: try RFC_6531.Mailbox("user@parity.example.com"))
         )
         Corpus.load("Suppressions.Bounces", case: "get").expect(matches: request)
     }
@@ -22,7 +23,7 @@ extension Mailgun.HTTP.Suppressions.Bounces.Construction.Unit {
     @Test func `delete builds the corpus delete request`() throws {
         let request = try Mailgun.HTTP.Suppressions.Bounces.delete(
             try Domain("parity.example.com"),
-            address: try EmailAddress("user@parity.example.com")
+            address: EmailAddress(rfc6531: try RFC_6531.Mailbox("user@parity.example.com"))
         )
         Corpus.load("Suppressions.Bounces", case: "delete").expect(matches: request)
     }
@@ -44,7 +45,7 @@ extension Mailgun.HTTP.Suppressions.Bounces.Construction.Unit {
         let request = try Mailgun.HTTP.Suppressions.Bounces.create(
             try Domain("parity.example.com"),
             .init(
-                address: try EmailAddress("user@parity.example.com"),
+                address: EmailAddress(rfc6531: try RFC_6531.Mailbox("user@parity.example.com")),
                 code: "550",
                 error: "Mailbox does not exist",
                 createdAt: "Thu, 01 Jan 2026 00:00:00 UTC"

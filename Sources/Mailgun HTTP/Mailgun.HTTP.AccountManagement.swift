@@ -1,5 +1,7 @@
 import EmailAddress_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.AccountManagement` (docs
 /// section "Account Management").
@@ -15,7 +17,7 @@ extension Mailgun.HTTP {
 extension Mailgun.HTTP.AccountManagement {
     public static func updateAccount(
         _ request: Mailgun.AccountManagement.Update.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let name = request.name { query.append(("name", name)) }
         if let value = request.inactiveSessionTimeout {
@@ -30,55 +32,55 @@ extension Mailgun.HTTP.AccountManagement {
         return try Mailgun.HTTP.Construction.request(.put, ["v5", "accounts"], query: query)
     }
 
-    public static func getHttpSigningKey() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    public static func getHttpSigningKey() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v5", "accounts", "http_signing_key"])
     }
 
     public static func regenerateHttpSigningKey()
-        throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request
+        throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request
     {
         try Mailgun.HTTP.Construction.request(.post, ["v5", "accounts", "http_signing_key"])
     }
 
     public static func getSandboxAuthRecipients()
-        throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request
+        throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request
     {
         try Mailgun.HTTP.Construction.request(.get, ["v5", "sandbox", "auth_recipients"])
     }
 
     public static func addSandboxAuthRecipient(
         _ request: Mailgun.AccountManagement.Sandbox.Auth.Recipients.Add.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .post,
             ["v5", "sandbox", "auth_recipients"],
-            query: [("email", request.email.rawValue)]
+            query: [("email", request.email.address)]
         )
     }
 
     public static func deleteSandboxAuthRecipient(
         _ email: EmailAddress
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
-            ["v5", "sandbox", "auth_recipients", email.rawValue]
+            ["v5", "sandbox", "auth_recipients", email.address]
         )
     }
 
     public static func resendActivationEmail()
-        throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request
+        throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request
     {
         try Mailgun.HTTP.Construction.request(.post, ["v5", "accounts", "resend_activation_email"])
     }
 
-    public static func getSAMLOrganization() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request
+    public static func getSAMLOrganization() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request
     {
         try Mailgun.HTTP.Construction.request(.get, ["v5", "accounts", "saml_org"])
     }
 
     public static func addSAMLOrganization(
         _ request: Mailgun.AccountManagement.SAML.Organization.Add.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = [("user_id", request.userId)]
         if let domain = request.domain { query.append(("domain", domain)) }
         return try Mailgun.HTTP.Construction.request(

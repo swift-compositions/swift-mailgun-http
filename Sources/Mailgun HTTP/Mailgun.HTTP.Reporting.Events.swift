@@ -1,6 +1,8 @@
 import Domain_Standard
 import EmailAddress_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 import Time
 
 /// Wire-level request construction for `Mailgun.Reporting.Events` (docs
@@ -20,7 +22,7 @@ extension Mailgun.HTTP.Reporting.Events {
     public static func list(
         _ domain: Domain,
         _ query: Mailgun.Reporting.Events.List.Query? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var parameters: [(String, String)] = []
         if let begin = query?.begin {
             parameters.append(("begin", String(begin.secondsSinceUnixEpoch)))
@@ -33,20 +35,20 @@ extension Mailgun.HTTP.Reporting.Events {
         if let event = query?.event { parameters.append(("event", event.rawValue)) }
         if let list = query?.list { parameters.append(("list", list)) }
         if let attachment = query?.attachment { parameters.append(("attachment", attachment)) }
-        if let from = query?.from { parameters.append(("from", from.rawValue)) }
+        if let from = query?.from { parameters.append(("from", from.address)) }
         if let messageId = query?.messageId { parameters.append(("message-id", messageId)) }
         if let subject = query?.subject { parameters.append(("subject", subject)) }
-        if let to = query?.to { parameters.append(("to", to.rawValue)) }
+        if let to = query?.to { parameters.append(("to", to.address)) }
         if let size = query?.size { parameters.append(("size", String(size))) }
-        if let recipient = query?.recipient { parameters.append(("recipient", recipient.rawValue)) }
+        if let recipient = query?.recipient { parameters.append(("recipient", recipient.address)) }
         if let recipients = query?.recipients {
-            parameters.append(("recipients", recipients.map(\.rawValue).joined(separator: ",")))
+            parameters.append(("recipients", recipients.map(\.address).joined(separator: ",")))
         }
         if let tags = query?.tags { parameters.append(("tags", tags.joined(separator: ","))) }
         if let severity = query?.severity { parameters.append(("severity", severity.rawValue)) }
         return try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "events"],
+            ["v3", domain.name, "events"],
             query: parameters
         )
     }

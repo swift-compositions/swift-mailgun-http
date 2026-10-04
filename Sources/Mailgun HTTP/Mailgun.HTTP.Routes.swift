@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Routes` (official reference:
 /// `.../send/mailgun/routes`).
@@ -13,7 +15,7 @@ extension Mailgun.HTTP {
 extension Mailgun.HTTP.Routes {
     public static func create(
         _ request: Mailgun.Routes.Create.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(.post, ["v3", "routes"])
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest
@@ -22,7 +24,7 @@ extension Mailgun.HTTP.Routes {
     public static func list(
         limit: Int? = nil,
         skip: Int? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let limit { query.append(("limit", String(limit))) }
         if let skip { query.append(("skip", String(skip))) }
@@ -31,14 +33,14 @@ extension Mailgun.HTTP.Routes {
 
     public static func get(
         _ id: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v3", "routes", id])
     }
 
     public static func update(
         _ id: String,
         _ request: Mailgun.Routes.Update.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(.put, ["v3", "routes", id])
         let boundary = try Mailgun.HTTP.Construction.boundary("----MailgunFormBoundary")
         try Mailgun.HTTP.Construction.multipart(request, boundary: boundary, into: &httpRequest)
@@ -47,13 +49,13 @@ extension Mailgun.HTTP.Routes {
 
     public static func delete(
         _ id: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.delete, ["v3", "routes", id])
     }
 
     public static func match(
         _ address: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
             ["v3", "routes", "match"],

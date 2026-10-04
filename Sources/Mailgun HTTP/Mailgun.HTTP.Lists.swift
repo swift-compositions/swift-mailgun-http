@@ -1,5 +1,7 @@
 import EmailAddress_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Lists` (official reference:
 /// `.../send/mailgun/mailing-lists`).
@@ -29,7 +31,7 @@ extension Mailgun.HTTP {
 extension Mailgun.HTTP.Lists {
     public static func create(
         _ request: Mailgun.Lists.List.Create.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(.post, ["v3", "lists"])
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest
@@ -37,26 +39,26 @@ extension Mailgun.HTTP.Lists {
 
     public static func list(
         _ request: Mailgun.Lists.List.Request = .init()
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let limit = request.limit { query.append(("limit", String(limit))) }
         if let skip = request.skip { query.append(("skip", String(skip))) }
-        if let address = request.address { query.append(("address", address.rawValue)) }
+        if let address = request.address { query.append(("address", address.address)) }
         return try Mailgun.HTTP.Construction.request(.get, ["v3", "lists"], query: query)
     }
 
     public static func members(
         _ listAddress: EmailAddress,
         _ request: Mailgun.Lists.List.Members.Request = .init()
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
-        if let address = request.address { query.append(("address", address.rawValue)) }
+        if let address = request.address { query.append(("address", address.address)) }
         if let subscribed = request.subscribed { query.append(("subscribed", String(subscribed))) }
         if let limit = request.limit { query.append(("limit", String(limit))) }
         if let skip = request.skip { query.append(("skip", String(skip))) }
         return try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", "lists", listAddress.rawValue, "members"],
+            ["v3", "lists", listAddress.address, "members"],
             query: query
         )
     }
@@ -64,10 +66,10 @@ extension Mailgun.HTTP.Lists {
     public static func addMember(
         _ listAddress: EmailAddress,
         _ request: Mailgun.Lists.Member.Add.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
-            ["v3", "lists", listAddress.rawValue, "members"]
+            ["v3", "lists", listAddress.address, "members"]
         )
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest
@@ -77,12 +79,12 @@ extension Mailgun.HTTP.Lists {
         _ listAddress: EmailAddress,
         _ members: [Mailgun.Lists.Member.Bulk],
         upsert: Bool? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let upsert { query.append(("upsert", String(upsert))) }
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
-            ["v3", "lists", listAddress.rawValue, "members.json"],
+            ["v3", "lists", listAddress.address, "members.json"],
             query: query
         )
         try Mailgun.HTTP.Construction.form(
@@ -96,10 +98,10 @@ extension Mailgun.HTTP.Lists {
     public static func getMember(
         _ listAddress: EmailAddress,
         _ memberAddress: EmailAddress
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", "lists", listAddress.rawValue, "members", memberAddress.rawValue]
+            ["v3", "lists", listAddress.address, "members", memberAddress.address]
         )
     }
 
@@ -107,10 +109,10 @@ extension Mailgun.HTTP.Lists {
         _ listAddress: EmailAddress,
         _ memberAddress: EmailAddress,
         _ request: Mailgun.Lists.Member.Update.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
-            ["v3", "lists", listAddress.rawValue, "members", memberAddress.rawValue]
+            ["v3", "lists", listAddress.address, "members", memberAddress.address]
         )
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest
@@ -119,20 +121,20 @@ extension Mailgun.HTTP.Lists {
     public static func deleteMember(
         _ listAddress: EmailAddress,
         _ memberAddress: EmailAddress
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
-            ["v3", "lists", listAddress.rawValue, "members", memberAddress.rawValue]
+            ["v3", "lists", listAddress.address, "members", memberAddress.address]
         )
     }
 
     public static func update(
         _ listAddress: EmailAddress,
         _ request: Mailgun.Lists.List.Update.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
-            ["v3", "lists", listAddress.rawValue]
+            ["v3", "lists", listAddress.address]
         )
         let boundary = try Mailgun.HTTP.Construction.boundary("----MailgunFormBoundary")
         try Mailgun.HTTP.Construction.multipart(request, boundary: boundary, into: &httpRequest)
@@ -141,19 +143,19 @@ extension Mailgun.HTTP.Lists {
 
     public static func delete(
         _ listAddress: EmailAddress
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
-        try Mailgun.HTTP.Construction.request(.delete, ["v3", "lists", listAddress.rawValue])
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
+        try Mailgun.HTTP.Construction.request(.delete, ["v3", "lists", listAddress.address])
     }
 
     public static func get(
         _ listAddress: EmailAddress
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
-        try Mailgun.HTTP.Construction.request(.get, ["v3", "lists", listAddress.rawValue])
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
+        try Mailgun.HTTP.Construction.request(.get, ["v3", "lists", listAddress.address])
     }
 
     public static func pages(
         limit: Int? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let limit { query.append(("limit", String(limit))) }
         return try Mailgun.HTTP.Construction.request(.get, ["v3", "lists", "pages"], query: query)
@@ -162,15 +164,15 @@ extension Mailgun.HTTP.Lists {
     public static func memberPages(
         _ listAddress: EmailAddress,
         _ request: Mailgun.Lists.List.Members.Pages.Request = .init()
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let subscribed = request.subscribed { query.append(("subscribed", String(subscribed))) }
         if let limit = request.limit { query.append(("limit", String(limit))) }
-        if let address = request.address { query.append(("address", address.rawValue)) }
+        if let address = request.address { query.append(("address", address.address)) }
         if let page = request.page { query.append(("page", page.rawValue)) }
         return try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", "lists", listAddress.rawValue, "members", "pages"],
+            ["v3", "lists", listAddress.address, "members", "pages"],
             query: query
         )
     }

@@ -1,7 +1,9 @@
 import Domain_Standard
 import EmailAddress_Standard
 import Foundation
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Suppressions.Complaints`
 /// (docs section "Complaints").
@@ -26,14 +28,14 @@ extension Mailgun.HTTP.Suppressions.Complaints {
     public static func importList(
         _ domain: Domain,
         _ request: Mailgun.Suppressions.Complaints.Import.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
-            ["v3", domain.rawValue, "complaints", "import"]
+            ["v3", domain.name, "complaints", "import"]
         )
         let boundary = try Mailgun.HTTP.Construction.boundary("----MailgunFormBoundary")
         try Mailgun.HTTP.Construction.multipart(
-            Self.ImportBody(file: Data(request.file)),
+            Self.ImportBody(file: Data(request.file.map(\.bitPattern))),
             boundary: boundary,
             into: &httpRequest
         )
@@ -50,35 +52,35 @@ extension Mailgun.HTTP.Suppressions.Complaints {
     public static func get(
         _ domain: Domain,
         address: EmailAddress
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "complaints", address.rawValue]
+            ["v3", domain.name, "complaints", address.address]
         )
     }
 
     public static func delete(
         _ domain: Domain,
         address: EmailAddress
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
-            ["v3", domain.rawValue, "complaints", address.rawValue]
+            ["v3", domain.name, "complaints", address.address]
         )
     }
 
     public static func list(
         _ domain: Domain,
         _ request: Mailgun.Suppressions.Complaints.List.Request? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
-        if let address = request?.address { query.append(("address", address.rawValue)) }
+        if let address = request?.address { query.append(("address", address.address)) }
         if let term = request?.term { query.append(("term", term)) }
         if let limit = request?.limit { query.append(("limit", String(limit))) }
         if let page = request?.page { query.append(("page", page)) }
         return try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "complaints"],
+            ["v3", domain.name, "complaints"],
             query: query
         )
     }
@@ -86,10 +88,10 @@ extension Mailgun.HTTP.Suppressions.Complaints {
     public static func create(
         _ domain: Domain,
         _ request: Mailgun.Suppressions.Complaints.Create.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
-            ["v3", domain.rawValue, "complaints"]
+            ["v3", domain.name, "complaints"]
         )
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest
@@ -97,7 +99,7 @@ extension Mailgun.HTTP.Suppressions.Complaints {
 
     public static func deleteAll(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
-        try Mailgun.HTTP.Construction.request(.delete, ["v3", domain.rawValue, "complaints"])
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
+        try Mailgun.HTTP.Construction.request(.delete, ["v3", domain.name, "complaints"])
     }
 }

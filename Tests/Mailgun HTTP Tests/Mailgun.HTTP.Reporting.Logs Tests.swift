@@ -15,8 +15,8 @@ extension Mailgun.HTTP.Reporting.Logs.Construction.Unit {
             .init(
                 action: "delivered",
                 groupBy: "domain",
-                startDate: Instant(secondsSinceUnixEpoch: 721_692_800),
-                endDate: Instant(secondsSinceUnixEpoch: 721_779_200),
+                startDate: Time.Instant(secondsSinceUnixEpoch: 721_692_800),
+                endDate: Time.Instant(secondsSinceUnixEpoch: 721_779_200),
                 filter: .init(
                     and: [
                         .init(

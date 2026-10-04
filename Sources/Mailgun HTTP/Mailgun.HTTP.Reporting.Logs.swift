@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 import Time
 
 /// Wire-level request construction for `Mailgun.Reporting.Logs` (docs
@@ -20,7 +22,7 @@ extension Mailgun.HTTP.Reporting {
 extension Mailgun.HTTP.Reporting.Logs {
     public static func analytics(
         _ request: Mailgun.Reporting.Logs.Analytics.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(.post, ["v1", "analytics", "logs"])
         try Mailgun.HTTP.Construction.json(Self.json(request), into: &httpRequest)
         return httpRequest

@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Subaccounts` (docs section
 /// "Subaccounts").
@@ -18,7 +20,7 @@ extension Mailgun.HTTP {
 extension Mailgun.HTTP.Subaccounts {
     public static func get(
         _ subaccountId: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
             ["v5", "accounts", "subaccounts", subaccountId]
@@ -27,7 +29,7 @@ extension Mailgun.HTTP.Subaccounts {
 
     public static func list(
         _ request: Mailgun.Subaccounts.List.Request? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let sort = request?.sort { query.append(("sort", sort.rawValue)) }
         if let filter = request?.filter { query.append(("filter", filter)) }
@@ -44,7 +46,7 @@ extension Mailgun.HTTP.Subaccounts {
 
     public static func create(
         _ request: Mailgun.Subaccounts.Create.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .post,
             ["v5", "accounts", "subaccounts"],
@@ -57,7 +59,7 @@ extension Mailgun.HTTP.Subaccounts {
     /// path — matching the archived router exactly.
     public static func delete(
         _ subaccountId: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .delete,
             ["v5", "accounts", "subaccounts"]
@@ -71,7 +73,7 @@ extension Mailgun.HTTP.Subaccounts {
     public static func disable(
         _ subaccountId: String,
         _ request: Mailgun.Subaccounts.Disable.Request? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let reason = request?.reason { query.append(("reason", reason)) }
         if let note = request?.note { query.append(("note", note)) }
@@ -84,7 +86,7 @@ extension Mailgun.HTTP.Subaccounts {
 
     public static func enable(
         _ subaccountId: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .post,
             ["v5", "accounts", "subaccounts", subaccountId, "enable"]
@@ -93,7 +95,7 @@ extension Mailgun.HTTP.Subaccounts {
 
     public static func getCustomLimit(
         _ subaccountId: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
             ["v5", "accounts", "subaccounts", subaccountId, "limit", "custom", "monthly"]
@@ -103,7 +105,7 @@ extension Mailgun.HTTP.Subaccounts {
     public static func updateCustomLimit(
         _ subaccountId: String,
         limit: Double
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .put,
             ["v5", "accounts", "subaccounts", subaccountId, "limit", "custom", "monthly"],
@@ -113,7 +115,7 @@ extension Mailgun.HTTP.Subaccounts {
 
     public static func deleteCustomLimit(
         _ subaccountId: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
             ["v5", "accounts", "subaccounts", subaccountId, "limit", "custom", "monthly"]
@@ -123,7 +125,7 @@ extension Mailgun.HTTP.Subaccounts {
     public static func updateFeatures(
         _ subaccountId: String,
         _ request: Mailgun.Subaccounts.Features.Update.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
             ["v5", "accounts", "subaccounts", subaccountId, "features"]

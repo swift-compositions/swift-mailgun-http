@@ -1,5 +1,7 @@
 import Domain_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 extension Mailgun.HTTP.Client {
     /// Wires `Mailgun.HTTP.Suppressions.Bounces`'s wire constructors to this

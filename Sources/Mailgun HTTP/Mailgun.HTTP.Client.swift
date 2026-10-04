@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 import RFC_3986
 
 extension Mailgun.HTTP {
@@ -19,19 +21,19 @@ extension Mailgun.HTTP {
         /// This client's Mailgun API credentials.
         public var authentication: Mailgun.HTTP.Authentication
 
-        /// The transport that turns a constructed `HTTP.Request` into an
-        /// `HTTP.Response`.
-        public var execute: @Sendable (HTTP.Request) async throws(ExecutionFailure) -> HTTP.Response
+        /// The transport that turns a constructed `HTTP.Router.Request` into an
+        /// `HTTP.Router.Response`.
+        public var execute: @Sendable (HTTP.Router.Request) async throws(ExecutionFailure) -> HTTP.Router.Response
 
         /// The `Authorization` header field, built once from `authentication`
         /// rather than re-encoded on every request (amendment A4).
-        let authorizationHeader: HTTP.Header.Field
+        let authorizationHeader: RFC_9110.Field
 
         public init(
             host: RFC_3986.URI.Host = .registeredName("api.mailgun.net"),
             authentication: Mailgun.HTTP.Authentication,
             execute:
-                @escaping @Sendable (HTTP.Request) async throws(ExecutionFailure) -> HTTP.Response
+                @escaping @Sendable (HTTP.Router.Request) async throws(ExecutionFailure) -> HTTP.Router.Response
         ) {
             self.host = host
             self.authentication = authentication
@@ -40,7 +42,7 @@ extension Mailgun.HTTP {
             // alphabet plus a space, which is always RFC 9110 field-value legal —
             // this can never actually throw.
             // swiftlint:disable:next force_try
-            self.authorizationHeader = try! HTTP.Header.Field(
+            self.authorizationHeader = try! RFC_9110.Field(
                 name: "Authorization",
                 value: authentication.credentials.headerValue
             )

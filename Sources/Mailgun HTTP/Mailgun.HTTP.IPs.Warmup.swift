@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.IPAddressWarmup` (docs
 /// section "IP Address Warmup").
@@ -14,20 +16,20 @@ extension Mailgun.HTTP.IPs {
 }
 
 extension Mailgun.HTTP.IPs.Warmup {
-    public static func list() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    public static func list() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v3", "ip_warmups"])
     }
 
     public static func get(
         _ ip: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v3", "ip_warmups", ip])
     }
 
     public static func create(
         _ ip: String,
         _ request: Mailgun.IPAddressWarmup.Create.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(.post, ["v3", "ip_warmups", ip])
         try Mailgun.HTTP.Construction.form(
             request,
@@ -39,7 +41,7 @@ extension Mailgun.HTTP.IPs.Warmup {
 
     public static func delete(
         _ ip: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.delete, ["v3", "ip_warmups", ip])
     }
 }

@@ -2,7 +2,9 @@ import Byte
 import Domain_Standard
 import EmailAddress_Standard
 import Foundation
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 import RFC_2045
 import RFC_2045_Coder
 import RFC_2046
@@ -45,10 +47,10 @@ extension Mailgun.HTTP.Messages {
     public static func send(
         _ domain: Domain,
         _ request: Mailgun.Messages.Send.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
-            ["v3", domain.rawValue, "messages"]
+            ["v3", domain.name, "messages"]
         )
         try Self.attach(Self.parts(for: request), into: &httpRequest)
         return httpRequest
@@ -57,10 +59,10 @@ extension Mailgun.HTTP.Messages {
     public static func sendMime(
         _ domain: Domain,
         _ request: Mailgun.Messages.Send.Mime.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
-            ["v3", domain.rawValue, "messages.mime"]
+            ["v3", domain.name, "messages.mime"]
         )
         try Self.attach(Self.parts(for: request), into: &httpRequest)
         return httpRequest
@@ -71,26 +73,26 @@ extension Mailgun.HTTP.Messages {
     public static func retrieve(
         _ domain: Domain,
         storageKey: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", "domains", domain.rawValue, "messages", storageKey]
+            ["v3", "domains", domain.name, "messages", storageKey]
         )
     }
 
     public static func queueStatus(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", "domains", domain.rawValue, "sending_queues"]
+            ["v3", "domains", domain.name, "sending_queues"]
         )
     }
 
     public static func deleteScheduled(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
-        try Mailgun.HTTP.Construction.request(.delete, ["v3", domain.rawValue, "envelopes"])
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
+        try Mailgun.HTTP.Construction.request(.delete, ["v3", domain.name, "envelopes"])
     }
 }
 
@@ -114,7 +116,7 @@ extension Mailgun.HTTP.Messages {
         _ name: String,
         filename: String,
         contentType: String?,
-        data: [UInt8]
+        data: [Byte]
     ) -> RFC_2046.BodyPart {
         // REASON: matches the archived router's `addFileField` exactly — an
         // unparseable filename or content type is dropped silently rather than
@@ -129,7 +131,7 @@ extension Mailgun.HTTP.Messages {
                 contentDisposition: .formData(name: name, filename: filename),
                 contentType: contentType
             ),
-            content: RFC_2046.BodyPart.Content(binary: data.map(Byte.init(bitPattern:)))
+            content: RFC_2046.BodyPart.Content(binary: data)
         )
     }
 
@@ -160,7 +162,7 @@ extension Mailgun.HTTP.Messages {
         var dkim: Bool?
         var secondaryDkim: String?
         var secondaryDkimPublic: String?
-        var deliveryTime: Instant?
+        var deliveryTime: Time.Instant?
         var deliveryTimeOptimizePeriod: String?
         var timeZoneLocalize: String?
         var testMode: Bool?
@@ -244,7 +246,7 @@ extension Mailgun.HTTP.Messages {
     /// than the archived formatter's implicit system-timezone dependency
     /// (`Instant` is a UTC instant; no corpus fixture exercises this
     /// field, so there is nothing to diverge from).
-    fileprivate static func rfc2822(_ instant: Instant) -> String {
+    fileprivate static func rfc2822(_ instant: Time.Instant) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -257,16 +259,16 @@ extension Mailgun.HTTP.Messages {
     fileprivate static func parts(
         for request: Mailgun.Messages.Send.Request
     ) -> [RFC_2046.BodyPart] {
-        var parts: [RFC_2046.BodyPart] = [Self.field("from", request.from.rawValue)]
-        for recipient in request.to { parts.append(Self.field("to", recipient.rawValue)) }
+        var parts: [RFC_2046.BodyPart] = [Self.field("from", request.from.address)]
+        for recipient in request.to { parts.append(Self.field("to", recipient.address)) }
         parts.append(Self.field("subject", request.subject))
         if let html = request.html { parts.append(Self.field("html", html)) }
         if let text = request.text { parts.append(Self.field("text", text)) }
         if let cc = request.cc {
-            for recipient in cc { parts.append(Self.field("cc", recipient.rawValue)) }
+            for recipient in cc { parts.append(Self.field("cc", recipient.address)) }
         }
         if let bcc = request.bcc {
-            for recipient in bcc { parts.append(Self.field("bcc", recipient.rawValue)) }
+            for recipient in bcc { parts.append(Self.field("bcc", recipient.address)) }
         }
         if let ampHtml = request.ampHtml { parts.append(Self.field("amp-html", ampHtml)) }
         parts.append(
@@ -333,7 +335,7 @@ extension Mailgun.HTTP.Messages {
         for request: Mailgun.Messages.Send.Mime.Request
     ) -> [RFC_2046.BodyPart] {
         var parts: [RFC_2046.BodyPart] = []
-        for recipient in request.to { parts.append(Self.field("to", recipient.rawValue)) }
+        for recipient in request.to { parts.append(Self.field("to", recipient.address)) }
         parts.append(
             Self.fileField(
                 "message",
@@ -385,7 +387,7 @@ extension Mailgun.HTTP.Messages {
     /// body.
     fileprivate static func attach(
         _ parts: [RFC_2046.BodyPart],
-        into request: inout HTTP.Request
+        into request: inout HTTP.Router.Request
     ) throws(Mailgun.HTTP.Construction.Error) {
         let boundary = try Mailgun.HTTP.Construction.boundary("Part-\(UUID().uuidString)")
         let multipart: RFC_2046.Multipart
@@ -396,8 +398,8 @@ extension Mailgun.HTTP.Messages {
         }
         var bytes: [Byte] = []
         RFC_2046.Multipart.serialize(multipart, into: &bytes)
-        request.body = bytes
-        request.headers.removeAll(named: "Content-Type")
+        request.content = bytes
+        request.headers.remove(.contentType)
         request.headers.append(
             try Mailgun.HTTP.Construction.header(
                 "Content-Type",

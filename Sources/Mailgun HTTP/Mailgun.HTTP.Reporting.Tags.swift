@@ -1,5 +1,7 @@
 import Domain_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Reporting.Tags` (docs
 /// section "Tags").
@@ -18,13 +20,13 @@ extension Mailgun.HTTP.Reporting.Tags {
     public static func list(
         _ domain: Domain,
         _ request: Mailgun.Reporting.Tags.List.Request? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let page = request?.page { query.append(("page", page)) }
         if let limit = request?.limit { query.append(("limit", String(limit))) }
         return try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "tags"],
+            ["v3", domain.name, "tags"],
             query: query
         )
     }
@@ -32,10 +34,10 @@ extension Mailgun.HTTP.Reporting.Tags {
     public static func get(
         _ domain: Domain,
         tag: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "tag"],
+            ["v3", domain.name, "tag"],
             query: [("tag", tag)]
         )
     }
@@ -44,10 +46,10 @@ extension Mailgun.HTTP.Reporting.Tags {
         _ domain: Domain,
         tag: String,
         _ request: Mailgun.Reporting.Tags.Update.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .put,
-            ["v3", domain.rawValue, "tag"],
+            ["v3", domain.name, "tag"],
             query: [("tag", tag), ("description", request.description)]
         )
     }
@@ -55,10 +57,10 @@ extension Mailgun.HTTP.Reporting.Tags {
     public static func delete(
         _ domain: Domain,
         tag: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
-            ["v3", domain.rawValue, "tag"],
+            ["v3", domain.name, "tag"],
             query: [("tag", tag)]
         )
     }
@@ -67,7 +69,7 @@ extension Mailgun.HTTP.Reporting.Tags {
         _ domain: Domain,
         tag: String,
         _ request: Mailgun.Reporting.Tags.Stats.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = [
             ("tag", tag),
             ("event", request.event.joined(separator: ",")),
@@ -81,7 +83,7 @@ extension Mailgun.HTTP.Reporting.Tags {
         if let country = request.country { query.append(("country", country)) }
         return try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "tag", "stats"],
+            ["v3", domain.name, "tag", "stats"],
             query: query
         )
     }
@@ -90,10 +92,10 @@ extension Mailgun.HTTP.Reporting.Tags {
         _ domain: Domain,
         tag: String,
         _ request: Mailgun.Reporting.Tags.Aggregates.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "tag", "stats", "aggregates"],
+            ["v3", domain.name, "tag", "stats", "aggregates"],
             query: [("tag", tag), ("type", request.type)]
         )
     }
@@ -102,10 +104,10 @@ extension Mailgun.HTTP.Reporting.Tags {
     /// segment every other operation here omits.
     public static func limits(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", "domains", domain.rawValue, "limits", "tag"]
+            ["v3", "domains", domain.name, "limits", "tag"]
         )
     }
 }

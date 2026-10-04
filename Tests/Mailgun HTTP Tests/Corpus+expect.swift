@@ -1,4 +1,5 @@
 import Foundation
+import RFC_9110
 import Testing
 
 @testable import Mailgun_HTTP
@@ -8,7 +9,7 @@ extension Corpus.Case {
     /// `Mailgun.HTTP.<Resource>` constructors — matches this corpus case's
     /// method, path, query, headers, and body exactly.
     func expect(
-        matches request: HTTP.Request,
+        matches request: HTTP.Router.Request,
         sourceLocation: SourceLocation = #_sourceLocation
     ) {
         #expect(
@@ -41,7 +42,7 @@ extension Corpus.Case {
             sourceLocation: sourceLocation
         )
 
-        let actualBody = request.body.map { String(decoding: $0.map(\.underlying), as: UTF8.self) }
+        let actualBody = request.content.map { String(decoding: $0.map(\.underlying), as: UTF8.self) }
         #expect(actualBody == body, "body (\(name))", sourceLocation: sourceLocation)
     }
 
@@ -57,7 +58,7 @@ extension Corpus.Case {
     /// fixture already carries, before comparing exactly as
     /// `expect(matches:)` does.
     func expect(
-        matchesNormalizingBoundary request: HTTP.Request,
+        matchesNormalizingBoundary request: HTTP.Router.Request,
         sourceLocation: SourceLocation = #_sourceLocation
     ) {
         #expect(
@@ -77,7 +78,7 @@ extension Corpus.Case {
             } ?? []
         #expect(actualQuery == query, "query (\(name))", sourceLocation: sourceLocation)
 
-        guard let contentType = request.headers.first("Content-Type")?.rawValue,
+        guard let contentType = request.headers[.contentType].first?.rawValue,
             let boundaryRange = contentType.range(of: "boundary=")
         else {
             Issue.record("no boundary in Content-Type (\(name))", sourceLocation: sourceLocation)
@@ -102,7 +103,7 @@ extension Corpus.Case {
             sourceLocation: sourceLocation
         )
 
-        let actualBody = request.body.map {
+        let actualBody = request.content.map {
             normalized(String(decoding: $0.map(\.underlying), as: UTF8.self))
         }
         #expect(actualBody == body, "body (\(name))", sourceLocation: sourceLocation)

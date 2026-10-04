@@ -1,5 +1,6 @@
 import Domain_Standard
 import EmailAddress_Standard
+import RFC_6531
 import Testing
 import Time
 
@@ -16,22 +17,22 @@ extension Mailgun.HTTP.Reporting.Events.Construction.Unit {
         let request = try Mailgun.HTTP.Reporting.Events.list(
             try Domain("parity.example.com"),
             .init(
-                begin: Instant(secondsSinceUnixEpoch: 1_700_000_000),
-                end: Instant(secondsSinceUnixEpoch: 1_700_086_400),
+                begin: Time.Instant(secondsSinceUnixEpoch: 1_700_000_000),
+                end: Time.Instant(secondsSinceUnixEpoch: 1_700_086_400),
                 ascending: .yes,
                 limit: 100,
                 event: .delivered,
                 list: "subscribers@parity.example.com",
                 attachment: "report.pdf",
-                from: try EmailAddress("sender@parity.example.com"),
+                from: EmailAddress(rfc6531: try RFC_6531.Mailbox("sender@parity.example.com")),
                 messageId: "20231113000000.1.PARITYFIXTURE@parity.example.com",
                 subject: "Parity fixture subject",
-                to: try EmailAddress("to@parity.example.com"),
+                to: EmailAddress(rfc6531: try RFC_6531.Mailbox("to@parity.example.com")),
                 size: 2048,
-                recipient: try EmailAddress("recipient@parity.example.com"),
+                recipient: EmailAddress(rfc6531: try RFC_6531.Mailbox("recipient@parity.example.com")),
                 recipients: [
-                    try EmailAddress("first@parity.example.com"),
-                    try EmailAddress("second@parity.example.com"),
+                    EmailAddress(rfc6531: try RFC_6531.Mailbox("first@parity.example.com")),
+                    EmailAddress(rfc6531: try RFC_6531.Mailbox("second@parity.example.com")),
                 ],
                 tags: ["newsletter", "onboarding"],
                 severity: .permanent

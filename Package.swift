@@ -39,11 +39,11 @@ let package = Package(
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-compositions/swift-http-body.git",
+            url: "https://github.com/swift-compositions/swift-http-router.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-standards/swift-http-standard.git",
+            url: "https://github.com/swift-standards/swift-http.git",
             branch: "main"
         ),
         .package(url: "https://github.com/swift-ietf/swift-rfc-2045.git", branch: "main"),
@@ -53,6 +53,7 @@ let package = Package(
         .package(url: "https://github.com/swift-ietf/swift-rfc-2183.git", branch: "main"),
         .package(url: "https://github.com/swift-ietf/swift-rfc-3986.git", branch: "main"),
         .package(url: "https://github.com/swift-ietf/swift-rfc-3986-coder.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-9110.git", branch: "main"),
         .package(
             url: "https://github.com/swift-atoms/swift-time.git",
             branch: "main"
@@ -76,8 +77,9 @@ let package = Package(
                 .product(name: "HTML Form Coder", package: "swift-html-form-coder"),
                 .product(name: "HTML Form Coder Codable", package: "swift-html-form-coder"),
                 .product(name: "HTML Standard", package: "swift-html-standard"),
-                .product(name: "HTTP Body", package: "swift-http-body"),
-                .product(name: "HTTP Standard", package: "swift-http-standard"),
+                .product(name: "HTTP Router", package: "swift-http-router"),
+                .product(name: "HTTP", package: "swift-http"),
+                .product(name: "RFC 9110", package: "swift-rfc-9110"),
                 .product(name: "RFC 2045", package: "swift-rfc-2045"),
                 .product(name: "RFC 2045 Coder", package: "swift-rfc-2045-coder"),
                 .product(name: "RFC 2046", package: "swift-rfc-2046"),

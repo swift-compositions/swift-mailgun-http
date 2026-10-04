@@ -1,5 +1,7 @@
 import Foundation
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 extension Mailgun.HTTP.Client {
     /// Builds a wire-request via `build`, sends it, and decodes the JSON
@@ -17,9 +19,9 @@ extension Mailgun.HTTP.Client {
     /// `swift-kernel` bindings that fail to compile on this toolchain, a
     /// pre-existing defect out of scope for this repository.
     func call<Response: Swift.Decodable>(
-        _ build: () throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request
+        _ build: () throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request
     ) async throws(Mailgun.HTTP.Error<ExecutionFailure>) -> Response {
-        let request: HTTP.Request
+        let request: HTTP.Router.Request
         do throws(Mailgun.HTTP.Construction.Error) {
             request = try build()
         } catch {
@@ -29,7 +31,7 @@ extension Mailgun.HTTP.Client {
         do {
             return try Foundation.JSONDecoder().decode(
                 Response.self,
-                from: Foundation.Data((response.body ?? []).map(\.underlying))
+                from: Foundation.Data((response.content ?? []).map(\.underlying))
             )
         } catch {
             throw .decode(String(describing: error))

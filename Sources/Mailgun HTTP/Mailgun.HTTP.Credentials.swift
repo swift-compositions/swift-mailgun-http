@@ -1,5 +1,7 @@
 import Domain_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Credentials` (official
 /// reference: `.../send/mailgun/domain-credentials`).
@@ -17,13 +19,13 @@ extension Mailgun.HTTP.Credentials {
     public static func list(
         domain: Domain,
         _ request: Mailgun.Credentials.List.Request? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let skip = request?.skip { query.append(("skip", String(skip))) }
         if let limit = request?.limit { query.append(("limit", String(limit))) }
         return try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", "domains", domain.rawValue, "credentials"],
+            ["v3", "domains", domain.name, "credentials"],
             query: query
         )
     }
@@ -31,10 +33,10 @@ extension Mailgun.HTTP.Credentials {
     public static func create(
         _ request: Mailgun.Credentials.Create.Request,
         domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
-            ["v3", "domains", domain.rawValue, "credentials"]
+            ["v3", "domains", domain.name, "credentials"]
         )
         try Mailgun.HTTP.Construction.form(
             request,
@@ -46,10 +48,10 @@ extension Mailgun.HTTP.Credentials {
 
     public static func deleteAll(
         domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
-            ["v3", "domains", domain.rawValue, "credentials"]
+            ["v3", "domains", domain.name, "credentials"]
         )
     }
 
@@ -57,10 +59,10 @@ extension Mailgun.HTTP.Credentials {
         _ login: String,
         _ request: Mailgun.Credentials.Update.Request,
         domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
-            ["v3", "domains", domain.rawValue, "credentials", login]
+            ["v3", "domains", domain.name, "credentials", login]
         )
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest
@@ -69,10 +71,10 @@ extension Mailgun.HTTP.Credentials {
     public static func delete(
         _ login: String,
         domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
-            ["v3", "domains", domain.rawValue, "credentials", login]
+            ["v3", "domains", domain.name, "credentials", login]
         )
     }
 
@@ -82,10 +84,10 @@ extension Mailgun.HTTP.Credentials {
         _ login: String,
         _ request: Mailgun.Credentials.Mailbox.Update.Request,
         domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
-            ["v3", domain.rawValue, "mailboxes", login]
+            ["v3", domain.name, "mailboxes", login]
         )
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest

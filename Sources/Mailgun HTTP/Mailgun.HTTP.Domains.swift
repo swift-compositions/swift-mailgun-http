@@ -1,5 +1,7 @@
 import Domain_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Domains.Domains` (official
 /// reference: `.../send/mailgun/domains`) — domain CRUD.
@@ -16,7 +18,7 @@ extension Mailgun.HTTP {
 extension Mailgun.HTTP.Domains {
     public static func list(
         _ request: Mailgun.Domains.Domains.List.Request? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let authority = request?.authority { query.append(("authority", authority)) }
         if let state = request?.state { query.append(("state", state.rawValue)) }
@@ -27,7 +29,7 @@ extension Mailgun.HTTP.Domains {
 
     public static func create(
         _ request: Mailgun.Domains.Domains.Create.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(.post, ["v4", "domains"])
         try Mailgun.HTTP.Construction.form(
             request,
@@ -39,17 +41,17 @@ extension Mailgun.HTTP.Domains {
 
     public static func get(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
-        try Mailgun.HTTP.Construction.request(.get, ["v4", "domains", domain.rawValue])
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
+        try Mailgun.HTTP.Construction.request(.get, ["v4", "domains", domain.name])
     }
 
     public static func update(
         _ domain: Domain,
         _ request: Mailgun.Domains.Domains.Update.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
-            ["v4", "domains", domain.rawValue]
+            ["v4", "domains", domain.name]
         )
         try Mailgun.HTTP.Construction.form(
             request,
@@ -61,13 +63,13 @@ extension Mailgun.HTTP.Domains {
 
     public static func delete(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
-        try Mailgun.HTTP.Construction.request(.delete, ["v4", "domains", domain.rawValue])
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
+        try Mailgun.HTTP.Construction.request(.delete, ["v4", "domains", domain.name])
     }
 
     public static func verify(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
-        try Mailgun.HTTP.Construction.request(.put, ["v4", "domains", domain.rawValue, "verify"])
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
+        try Mailgun.HTTP.Construction.request(.put, ["v4", "domains", domain.name, "verify"])
     }
 }

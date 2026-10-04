@@ -1,5 +1,7 @@
 import Domain_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Reporting.Stats` (docs
 /// section "Stats").
@@ -14,7 +16,7 @@ extension Mailgun.HTTP.Reporting {
 extension Mailgun.HTTP.Reporting.Stats {
     public static func total(
         _ request: Mailgun.Reporting.Stats.Total.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = [("event", request.event)]
         if let start = request.start { query.append(("start", start)) }
         if let end = request.end { query.append(("end", end)) }
@@ -25,7 +27,7 @@ extension Mailgun.HTTP.Reporting.Stats {
 
     public static func filter(
         _ request: Mailgun.Reporting.Stats.Filter.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = [("event", request.event)]
         if let start = request.start { query.append(("start", start)) }
         if let end = request.end { query.append(("end", end)) }
@@ -38,28 +40,28 @@ extension Mailgun.HTTP.Reporting.Stats {
 
     public static func aggregateProviders(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "aggregates", "providers"]
+            ["v3", domain.name, "aggregates", "providers"]
         )
     }
 
     public static func aggregateDevices(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "aggregates", "devices"]
+            ["v3", domain.name, "aggregates", "devices"]
         )
     }
 
     public static func aggregateCountries(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "aggregates", "countries"]
+            ["v3", domain.name, "aggregates", "countries"]
         )
     }
 }

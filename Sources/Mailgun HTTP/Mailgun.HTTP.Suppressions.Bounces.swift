@@ -1,6 +1,8 @@
 import Domain_Standard
 import EmailAddress_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Suppressions.Bounces` (docs
 /// section "Bounces").
@@ -32,34 +34,34 @@ extension Mailgun.HTTP.Suppressions.Bounces {
     public static func get(
         _ domain: Domain,
         address: EmailAddress
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "bounces", address.rawValue]
+            ["v3", domain.name, "bounces", address.address]
         )
     }
 
     public static func delete(
         _ domain: Domain,
         address: EmailAddress
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
-            ["v3", domain.rawValue, "bounces", address.rawValue]
+            ["v3", domain.name, "bounces", address.address]
         )
     }
 
     public static func list(
         _ domain: Domain,
         _ request: Mailgun.Suppressions.Bounces.List.Request? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let limit = request?.limit { query.append(("limit", String(limit))) }
         if let page = request?.page { query.append(("page", page)) }
         if let term = request?.term { query.append(("term", term)) }
         return try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", domain.rawValue, "bounces"],
+            ["v3", domain.name, "bounces"],
             query: query
         )
     }
@@ -67,10 +69,10 @@ extension Mailgun.HTTP.Suppressions.Bounces {
     public static func create(
         _ domain: Domain,
         _ request: Mailgun.Suppressions.Bounces.Create.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
-            ["v3", domain.rawValue, "bounces"]
+            ["v3", domain.name, "bounces"]
         )
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest
@@ -78,7 +80,7 @@ extension Mailgun.HTTP.Suppressions.Bounces {
 
     public static func deleteAll(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
-        try Mailgun.HTTP.Construction.request(.delete, ["v3", domain.rawValue, "bounces"])
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
+        try Mailgun.HTTP.Construction.request(.delete, ["v3", domain.name, "bounces"])
     }
 }

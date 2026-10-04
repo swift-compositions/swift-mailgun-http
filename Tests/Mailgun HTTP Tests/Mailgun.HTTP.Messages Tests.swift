@@ -1,5 +1,7 @@
+import Byte
 import Domain_Standard
 import EmailAddress_Standard
+import RFC_6531
 import Testing
 
 @testable import Mailgun_HTTP
@@ -15,16 +17,16 @@ extension Mailgun.HTTP.Messages.Construction.Unit {
         let request = try Mailgun.HTTP.Messages.send(
             try Domain("parity.example.com"),
             .init(
-                from: try EmailAddress("sender@parity.example.com"),
+                from: EmailAddress(rfc6531: try RFC_6531.Mailbox("sender@parity.example.com")),
                 to: [
-                    try EmailAddress("first@parity.example.com"),
-                    try EmailAddress("second@parity.example.com"),
+                    EmailAddress(rfc6531: try RFC_6531.Mailbox("first@parity.example.com")),
+                    EmailAddress(rfc6531: try RFC_6531.Mailbox("second@parity.example.com")),
                 ],
                 subject: "Parity corpus subject",
                 html: "<h1>Parity</h1><p>Hello</p>",
                 text: "Parity plain text",
-                cc: [try EmailAddress("cc@parity.example.com")],
-                bcc: [try EmailAddress("bcc@parity.example.com")],
+                cc: [EmailAddress(rfc6531: try RFC_6531.Mailbox("cc@parity.example.com"))],
+                bcc: [EmailAddress(rfc6531: try RFC_6531.Mailbox("bcc@parity.example.com"))],
                 ampHtml: "<html amp4email>Parity AMP</html>",
                 template: "parity-template",
                 templateVersion: "v2",
@@ -32,14 +34,14 @@ extension Mailgun.HTTP.Messages.Construction.Unit {
                 templateVariables: #"{"key":"value"}"#,
                 attachments: [
                     .init(
-                        data: Array("attachment-bytes".utf8),
+                        data: Array("attachment-bytes".utf8).map(Byte.init(bitPattern:)),
                         filename: "report.txt",
                         contentType: "text/plain"
                     )
                 ],
                 inline: [
                     .init(
-                        data: Array("inline-bytes".utf8),
+                        data: Array("inline-bytes".utf8).map(Byte.init(bitPattern:)),
                         filename: "logo.png",
                         contentType: "image/png"
                     )
@@ -72,12 +74,12 @@ extension Mailgun.HTTP.Messages.Construction.Unit {
             try Domain("parity.example.com"),
             .init(
                 to: [
-                    try EmailAddress("first@parity.example.com"),
-                    try EmailAddress("second@parity.example.com"),
+                    EmailAddress(rfc6531: try RFC_6531.Mailbox("first@parity.example.com")),
+                    EmailAddress(rfc6531: try RFC_6531.Mailbox("second@parity.example.com")),
                 ],
                 message: Array(
                     "From: sender@parity.example.com\r\nSubject: Parity MIME\r\n\r\nBody".utf8
-                ),
+                ).map(Byte.init(bitPattern:)),
                 template: "parity-template",
                 templateVersion: "v2",
                 templateText: false,

@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 import RFC_3986
 import RFC_3986_Coder
 
@@ -9,17 +11,17 @@ extension Mailgun.HTTP.Client {
     ///
     /// Query and body are carried through unchanged; only the target form and
     /// headers change.
-    public func authenticated(_ request: HTTP.Request) -> HTTP.Request {
+    public func authenticated(_ request: HTTP.Router.Request) -> HTTP.Router.Request {
         var request = request
         request.headers.append(authorizationHeader)
-        if let path = request.path {
-            request.target = .absolute(
+        if case .resource(let uri) = request.target, uri.isRelative, let path = uri.path {
+            request.target = .resource(
                 RFC_3986.URI(
                     // swiftlint:disable:next force_try
                     scheme: try! .init("https"),
                     authority: .init(host: host),
                     path: path,
-                    query: request.query
+                    query: uri.query
                 )
             )
         }
@@ -29,8 +31,8 @@ extension Mailgun.HTTP.Client {
     /// Authenticates and sends a wire-constructed request, returning the raw
     /// response unparsed.
     public func send(
-        _ request: HTTP.Request
-    ) async throws(Mailgun.HTTP.Error<ExecutionFailure>) -> HTTP.Response {
+        _ request: HTTP.Router.Request
+    ) async throws(Mailgun.HTTP.Error<ExecutionFailure>) -> HTTP.Router.Response {
         do throws(ExecutionFailure) {
             return try await execute(authenticated(request))
         } catch {

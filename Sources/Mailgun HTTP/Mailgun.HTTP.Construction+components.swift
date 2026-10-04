@@ -3,15 +3,16 @@ import Domain_Standard
 import Foundation
 import HTML_Form_Coder_Codable
 import HTML_Standard
-import HTTP_Body
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 import RFC_2046
 import RFC_3986
 
 /// Shared building blocks every `Mailgun.HTTP.<Resource>` request constructor
 /// composes from: origin-form path/query, and form / multipart body encoding.
 ///
-/// Every constructor returns an origin-form, unauthenticated `HTTP.Request` —
+/// Every constructor returns an origin-form, unauthenticated `HTTP.Router.Request` —
 /// no scheme, host, or `Authorization` header. `Mailgun.HTTP.Client.authenticated(_:)`
 /// adds those. This split is what makes the constructors directly comparable
 /// against `Tests/Mailgun HTTP Tests/__Corpus__`, whose fixtures record only
@@ -51,9 +52,9 @@ extension Mailgun.HTTP.Construction {
     /// Builds a header field for an operation that carries state outside its
     /// path/query/body — e.g. `Mailgun.Subaccounts.delete`'s
     /// `X-Mailgun-On-Behalf-Of`.
-    static func header(_ name: String, _ value: String) throws(Error) -> HTTP.Header.Field {
-        do throws(HTTP.Header.Field.Error) {
-            return try HTTP.Header.Field(name: name, value: value)
+    static func header(_ name: String, _ value: String) throws(Error) -> RFC_9110.Field {
+        do throws(RFC_9110.Field.Error) {
+            return try RFC_9110.Field(name: name, value: value)
         } catch {
             throw .header(error)
         }
@@ -75,11 +76,14 @@ extension Mailgun.HTTP.Construction {
         _ method: HTTP.Method,
         _ segments: [String],
         query parameters: [(String, String)] = []
-    ) throws(Error) -> HTTP.Request {
-        HTTP.Request(
+    ) throws(Error) -> HTTP.Router.Request {
+        let path = try path(segments)
+        let query = try query(parameters)
+        return HTTP.Router.Request(
             method: method,
-            path: try path(segments),
-            query: try query(parameters)
+            target: .resource(
+                RFC_3986.URI(unchecked: query.map { "\(path)?\($0)" } ?? path.description)
+            )
         )
     }
 
@@ -89,7 +93,7 @@ extension Mailgun.HTTP.Construction {
         _ value: Value,
         decoder: HTML.Form.Coder.Decoder = .init(),
         encoder: HTML.Form.Coder.Encoder = .mailgun,
-        into request: inout HTTP.Request
+        into request: inout HTTP.Router.Request
     ) throws(Error) {
         do {
             try request.body(
@@ -107,7 +111,7 @@ extension Mailgun.HTTP.Construction {
     static func multipart<Value: Swift.Codable>(
         _ value: Value,
         boundary: RFC_2046.Boundary,
-        into request: inout HTTP.Request
+        into request: inout HTTP.Router.Request
     ) throws(Error) {
         do {
             try request.body(
@@ -138,7 +142,7 @@ extension Mailgun.HTTP.Construction {
     /// which is all this package needs from a JSON encoder.
     static func json<Value: Swift.Encodable>(
         _ value: Value,
-        into request: inout HTTP.Request
+        into request: inout HTTP.Router.Request
     ) throws(Error) {
         let encoder = Foundation.JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
@@ -148,8 +152,8 @@ extension Mailgun.HTTP.Construction {
         } catch {
             throw .json(String(describing: error))
         }
-        request.body = data.map(Byte.init(bitPattern:))
-        request.headers.removeAll(named: "Content-Type")
+        request.content = data.map(Byte.init(bitPattern:))
+        request.headers.remove(.contentType)
         request.headers.append(
             try Mailgun.HTTP.Construction.header("Content-Type", "application/json")
         )

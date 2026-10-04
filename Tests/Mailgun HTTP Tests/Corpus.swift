@@ -5,7 +5,7 @@ import Testing
 
 /// Parses the Swift-embedded parity corpus documents (ported unchanged from the
 /// archived `Mailgun Router Parity Tests` corpus, `swift-mailgun-standard`
-/// commit `15f7f18`) and compares them against a constructed `HTTP.Request`.
+/// commit `15f7f18`) and compares them against a constructed `HTTP.Router.Request`.
 ///
 /// Each case block has the shape:
 /// ```

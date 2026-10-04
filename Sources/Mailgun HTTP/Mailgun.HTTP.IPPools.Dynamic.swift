@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.DynamicIPPools` (docs section
 /// "Dynamic IP Pools").
@@ -16,7 +18,7 @@ extension Mailgun.HTTP.IPPools {
 extension Mailgun.HTTP.IPPools.Dynamic {
     public static func listHistory(
         _ request: Mailgun.DynamicIPPools.HistoryList.Request = .init()
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let limit = request.limit { query.append(("Limit", String(limit))) }
         if let includeSubaccounts = request.includeSubaccounts {
@@ -36,7 +38,7 @@ extension Mailgun.HTTP.IPPools.Dynamic {
 
     public static func removeOverride(
         domain: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
             ["v1", "dynamic_pools", "domains", domain, "override"]

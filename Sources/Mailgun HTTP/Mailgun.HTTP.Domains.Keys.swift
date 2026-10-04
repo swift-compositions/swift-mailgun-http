@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Domains.DomainKeys` (docs
 /// section "Domain Keys").
@@ -16,7 +18,7 @@ extension Mailgun.HTTP.Domains {
 extension Mailgun.HTTP.Domains.Keys {
     public static func list(
         _ request: Mailgun.Domains.DomainKeys.List.Request? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let page = request?.page { query.append(("page", page)) }
         if let limit = request?.limit { query.append(("limit", String(limit))) }
@@ -29,7 +31,7 @@ extension Mailgun.HTTP.Domains.Keys {
 
     public static func create(
         _ request: Mailgun.Domains.DomainKeys.Create.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(.post, ["v1", "dkim", "keys"])
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest
@@ -37,7 +39,7 @@ extension Mailgun.HTTP.Domains.Keys {
 
     public static func delete(
         _ request: Mailgun.Domains.DomainKeys.Delete.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(.delete, ["v1", "dkim", "keys"])
         try Mailgun.HTTP.Construction.form(request, into: &httpRequest)
         return httpRequest
@@ -46,7 +48,7 @@ extension Mailgun.HTTP.Domains.Keys {
     public static func activate(
         authorityName: String,
         selector: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .put,
             ["v4", "domains", authorityName, "keys", selector, "activate"]
@@ -55,14 +57,14 @@ extension Mailgun.HTTP.Domains.Keys {
 
     public static func listDomainKeys(
         authorityName: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v4", "domains", authorityName, "keys"])
     }
 
     public static func deactivate(
         authorityName: String,
         selector: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .put,
             ["v4", "domains", authorityName, "keys", selector, "deactivate"]
@@ -72,7 +74,7 @@ extension Mailgun.HTTP.Domains.Keys {
     public static func setDkimAuthority(
         domainName: String,
         _ request: Mailgun.Domains.DomainKeys.SetDkimAuthority.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
             ["v3", "domains", domainName, "dkim_authority"]
@@ -84,7 +86,7 @@ extension Mailgun.HTTP.Domains.Keys {
     public static func setDkimSelector(
         domainName: String,
         _ request: Mailgun.Domains.DomainKeys.SetDkimSelector.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
             ["v3", "domains", domainName, "dkim_selector"]

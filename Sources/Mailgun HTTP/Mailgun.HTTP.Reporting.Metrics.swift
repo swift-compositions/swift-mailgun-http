@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Reporting.Metrics` (docs
 /// section "Account Metrics").
@@ -17,7 +19,7 @@ extension Mailgun.HTTP.Reporting {
 extension Mailgun.HTTP.Reporting.Metrics {
     public static func getAccountMetrics(
         _ request: Mailgun.Reporting.Metrics.GetAccountMetrics.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
             ["v1", "analytics", "metrics"]
@@ -28,7 +30,7 @@ extension Mailgun.HTTP.Reporting.Metrics {
 
     public static func getAccountUsageMetrics(
         _ request: Mailgun.Reporting.Metrics.GetAccountUsageMetrics.Request
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
             ["v1", "analytics", "usage", "metrics"]

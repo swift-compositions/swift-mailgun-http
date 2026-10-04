@@ -1,5 +1,7 @@
 import Domain_Standard
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Webhooks` (official reference:
 /// `.../send/mailgun/domain-webhooks`) — domain-level webhooks.
@@ -16,27 +18,27 @@ extension Mailgun.HTTP {
 extension Mailgun.HTTP.Webhooks {
     public static func list(
         _ domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
-        try Mailgun.HTTP.Construction.request(.get, ["v3", "domains", domain.rawValue, "webhooks"])
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
+        try Mailgun.HTTP.Construction.request(.get, ["v3", "domains", domain.name, "webhooks"])
     }
 
     public static func get(
         _ webhookName: Mailgun.Webhooks.WebhookType,
         domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .get,
-            ["v3", "domains", domain.rawValue, "webhooks", webhookName.rawValue]
+            ["v3", "domains", domain.name, "webhooks", webhookName.rawValue]
         )
     }
 
     public static func create(
         _ request: Mailgun.Webhooks.Create.Request,
         domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .post,
-            ["v3", "domains", domain.rawValue, "webhooks"]
+            ["v3", "domains", domain.name, "webhooks"]
         )
         try Mailgun.HTTP.Construction.form(request, encoder: .mailgunBracketed, into: &httpRequest)
         return httpRequest
@@ -46,10 +48,10 @@ extension Mailgun.HTTP.Webhooks {
         _ webhookName: Mailgun.Webhooks.WebhookType,
         _ request: Mailgun.Webhooks.Update.Request,
         domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var httpRequest = try Mailgun.HTTP.Construction.request(
             .put,
-            ["v3", "domains", domain.rawValue, "webhooks", webhookName.rawValue]
+            ["v3", "domains", domain.name, "webhooks", webhookName.rawValue]
         )
         try Mailgun.HTTP.Construction.form(request, encoder: .mailgunBracketed, into: &httpRequest)
         return httpRequest
@@ -58,10 +60,10 @@ extension Mailgun.HTTP.Webhooks {
     public static func delete(
         _ webhookName: Mailgun.Webhooks.WebhookType,
         domain: Domain
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(
             .delete,
-            ["v3", "domains", domain.rawValue, "webhooks", webhookName.rawValue]
+            ["v3", "domains", domain.name, "webhooks", webhookName.rawValue]
         )
     }
 }

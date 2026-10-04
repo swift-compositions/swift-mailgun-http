@@ -1,4 +1,6 @@
-import HTTP_Standard
+import HTTP
+import HTTP_Router
+import RFC_9110
 
 /// Wire-level request construction for `Mailgun.Users` (docs section
 /// "Users").
@@ -13,7 +15,7 @@ extension Mailgun.HTTP {
 extension Mailgun.HTTP.Users {
     public static func list(
         _ request: Mailgun.Users.List.Request? = nil
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         var query: [(String, String)] = []
         if let role = request?.role { query.append(("role", role.rawValue)) }
         if let limit = request?.limit { query.append(("limit", String(limit))) }
@@ -23,25 +25,25 @@ extension Mailgun.HTTP.Users {
 
     public static func get(
         _ userId: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v5", "users", userId])
     }
 
-    public static func me() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    public static func me() throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.get, ["v5", "users", "me"])
     }
 
     public static func addToOrganization(
         userId: String,
         orgId: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.put, ["v5", "users", userId, "org", orgId])
     }
 
     public static func removeFromOrganization(
         userId: String,
         orgId: String
-    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Request {
+    ) throws(Mailgun.HTTP.Construction.Error) -> HTTP.Router.Request {
         try Mailgun.HTTP.Construction.request(.delete, ["v5", "users", userId, "org", orgId])
     }
 }

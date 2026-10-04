@@ -1,4 +1,5 @@
 import EmailAddress_Standard
+import RFC_6531
 import Testing
 
 @testable import Mailgun_HTTP
@@ -45,7 +46,7 @@ extension Mailgun.HTTP.AccountManagement.Construction.Unit {
         throws
     {
         let request = try Mailgun.HTTP.AccountManagement.addSandboxAuthRecipient(
-            .init(email: try EmailAddress("recipient@parity.example.com"))
+            .init(email: EmailAddress(rfc6531: try RFC_6531.Mailbox("recipient@parity.example.com")))
         )
         Corpus.load("AccountManagement", case: "addSandboxAuthRecipient").expect(matches: request)
     }
@@ -54,7 +55,7 @@ extension Mailgun.HTTP.AccountManagement.Construction.Unit {
         throws
     {
         let request = try Mailgun.HTTP.AccountManagement.deleteSandboxAuthRecipient(
-            try EmailAddress("recipient@parity.example.com")
+            EmailAddress(rfc6531: try RFC_6531.Mailbox("recipient@parity.example.com"))
         )
         Corpus.load("AccountManagement", case: "deleteSandboxAuthRecipient")
             .expect(matches: request)
